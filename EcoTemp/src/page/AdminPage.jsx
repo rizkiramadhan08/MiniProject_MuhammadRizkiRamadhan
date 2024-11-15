@@ -1,38 +1,56 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import FeedbackAdmin from '../components/FeedbackAdmin';
 
-function AdminPage() {
-  const [temperatures, setTemperatures] = useState([]);
+const AdminPage = () => {
+  const [feedbacks, setFeedbacks] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Simulasi data suhu
-    setTemperatures([
-      { id: 1, room: 'Ruang 101', temperature: 24 },
-      { id: 2, room: 'Ruang 102', temperature: 22 },
-      { id: 3, room: 'Ruang 103', temperature: 26 },
-    ]);
+    const fetchFeedbacks = async () => {
+      try {
+        const response = await axios.get('https://673577925995834c8a92dcb6.mockapi.io/Feedback');
+        setFeedbacks(response.data);
+      } catch (error) {
+        console.error('Error fetching feedbacks:', error);
+      }
+    };
+
+    fetchFeedbacks();
   }, []);
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`https://673577925995834c8a92dcb6.mockapi.io/Feedback/${id}`);
+      setFeedbacks(feedbacks.filter((feedback) => feedback.id !== id));
+    } catch (error) {
+      console.error('Error deleting feedback:', error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    navigate('/login');
+  };
+
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">Dashboard Admin - Pemantauan Suhu</h1>
-      <table className="table-auto bg-white shadow-lg rounded">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="px-4 py-2">Ruangan</th>
-            <th className="px-4 py-2">Suhu</th>
-          </tr>
-        </thead>
-        <tbody>
-          {temperatures.map((temp) => (
-            <tr key={temp.id}>
-              <td className="border px-4 py-2">{temp.room}</td>
-              <td className="border px-4 py-2">{temp.temperature}°C</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="min-h-screen bg-gray-100 py-10 px-4">
+      <div className="max-w-6xl mx-auto">
+        <header className="flex justify-between items-center mb-8">
+          <h1 className="text-4xl font-bold text-gray-800">Admin Dashboard</h1>
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600"
+          >
+            Logout
+          </button>
+        </header>
+
+        <FeedbackAdmin feedbacks={feedbacks} handleDelete={handleDelete} />
+      </div>
     </div>
   );
-}
+};
 
 export default AdminPage;
