@@ -39,9 +39,6 @@ function LandingPage() {
           <img src={home} alt="Monitoring Suhu Ruangan" className="w-full h-auto" />
         </div>
       </section>
-
-      {/* Footer Section */}
-      <Footer/>
     </div>
   );
 }
