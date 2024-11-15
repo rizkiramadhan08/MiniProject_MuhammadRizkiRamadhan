@@ -1,52 +1,108 @@
-import { useState } from 'react';
-import InputField from '../components/InputField'; // Impor InputField
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import InputField from '../components/InputField';
+import FeedbackList from '../components/FeedbackList';
+
 
 function FeedBack() {
-  // State untuk menyimpan input form
   const [name, setName] = useState('');
-  const [room, setRoom] = useState('Ruangan 1'); // Default value untuk select
+  const [room, setRoom] = useState('Ruangan 1');
   const [temperature, setTemperature] = useState('');
   const [description, setDescription] = useState('');
   const [feedbacks, setFeedbacks] = useState([]);
+  const [editingId, setEditingId] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
 
-  // Fungsi untuk menangani submit form
-  const handleSubmit = (e) => {
+  // Fetch all feedbacks from the API
+  const fetchFeedbacks = async () => {
+    try {
+      const response = await axios.get('https://673577925995834c8a92dcb6.mockapi.io/Feedback');
+      setFeedbacks(response.data);
+    } catch (error) {
+      console.error('Error fetching feedbacks:', error);
+    }
+  };
+
+  // Submit form handler for both creating and editing feedback
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newFeedback = {
       name,
       room,
       temperature,
       description,
+      timestamp: new Date(),
     };
-    setFeedbacks([...feedbacks, newFeedback]);
 
-    // Reset form setelah submit
+    try {
+      if (editingId) {
+        // Update existing feedback (PUT)
+        await axios.put(`https://673577925995834c8a92dcb6.mockapi.io/Feedback/${editingId}`, newFeedback);
+        setEditingId(null); // Clear editing state
+      } else {
+        // Create new feedback (POST)
+        await axios.post('https://673577925995834c8a92dcb6.mockapi.io/Feedback', newFeedback);
+      }
+      fetchFeedbacks();
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+    }
+
+    // Clear form
     setName('');
-    setRoom('Ruangan 1'); // Kembalikan ke default room
+    setRoom('Ruangan 1');
     setTemperature('');
     setDescription('');
-
     setShowAlert(true);
     setTimeout(() => {
       setShowAlert(false);
     }, 3000);
   };
 
+  // Edit feedback handler
+  const handleEdit = (feedback) => {
+    setName(feedback.name);
+    setRoom(feedback.room);
+    setTemperature(feedback.temperature);
+    setDescription(feedback.description);
+    setEditingId(feedback.id); // Set editingId to the feedback being edited
+  };
+
+  // Check if the feedback is still editable within 1 minute
+  const isEditable = (timestamp) => {
+    const currentTime = new Date();
+    const feedbackTime = new Date(timestamp);
+    const timeDiff = (currentTime - feedbackTime) / 1000; // Difference in seconds
+    return timeDiff < 60; // Editable if less than 60 seconds
+  };
+
+  // Interval to refresh time-based UI elements (e.g., Edit button state)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // This will force re-render every 1 second to update button states
+      setFeedbacks((feedbacks) => [...feedbacks]);
+    }, 1000); // Re-render every second
+
+    // Clear interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    fetchFeedbacks();
+  }, []);
+
   return (
     <div className="min-h-screen bg-green-50 py-10 px-4">
       <div className="max-w-4xl mx-auto">
 
-        {/* ALERT */}
         {showAlert && (
           <div className="mb-4 text-center">
             <div className="bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg">
-              Feedback berhasil dikirim!
+              {editingId ? "Feedback berhasil diperbarui!" : "Feedback berhasil dikirim!"}
             </div>
           </div>
         )}
 
-        {/* Penjelasan */}
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-green-700">Feedback Suhu Ruangan</h1>
           <p className="mt-2 text-gray-600">
@@ -54,7 +110,7 @@ function FeedBack() {
           </p>
         </header>
 
-        {/* Form Input */}
+        {/* Form for creating or editing feedback */}
         <form onSubmit={handleSubmit} className="bg-white shadow-md rounded-lg p-6 mb-10">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <InputField
@@ -64,8 +120,6 @@ function FeedBack() {
               onChange={(e) => setName(e.target.value)}
               placeholder="Masukkan nama Anda"
             />
-            
-            {/* Dropdown Ruangan */}
             <div className="mb-4">
               <label className="block mb-2 text-sm font-medium text-gray-700">Ruangan</label>
               <select
@@ -87,7 +141,6 @@ function FeedBack() {
               onChange={(e) => setTemperature(e.target.value)}
               placeholder="Masukkan suhu ruangan"
             />
-            
             <div className="mb-4">
               <label className="block mb-2 text-sm font-medium text-gray-700">Deskripsi</label>
               <textarea
@@ -103,43 +156,17 @@ function FeedBack() {
             type="submit"
             className="mt-6 w-full py-2 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500"
           >
-            Kirim Umpan Balik
+            {editingId ? "Perbarui Umpan Balik" : "Kirim Umpan Balik"}
           </button>
         </form>
 
-        {/* Tabel Hasil Feedback */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow-md rounded-lg">
-            <thead>
-              <tr className="bg-green-600 text-white">
-                <th className="py-2 px-4 text-left">no</th>
-                <th className="py-2 px-4 text-left">Nama</th>
-                <th className="py-2 px-4 text-left">Ruangan</th>
-                <th className="py-2 px-4 text-left">Suhu (°C)</th>
-                <th className="py-2 px-4 text-left">Deskripsi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {feedbacks.length === 0 ? (
-                <tr>
-                  <td colSpan="5" className="text-center py-4 text-gray-500">
-                    Belum ada umpan balik.
-                  </td>
-                </tr>
-              ) : (
-                feedbacks.map((feedback, index) => (
-                  <tr key={index} className="border-t">
-                    <td>{index + 1}</td>
-                    <td className="py-2 px-4">{feedback.name}</td>
-                    <td className="py-2 px-4">{feedback.room}</td>
-                    <td className="py-2 px-4">{feedback.temperature}</td>
-                    <td className="py-2 px-4">{feedback.description}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+        {/* Table displaying feedbacks */}
+        <FeedbackList 
+          feedbacks={feedbacks} 
+          handleEdit={handleEdit} 
+          isEditable={isEditable} 
+        />
+
       </div>
     </div>
   );
