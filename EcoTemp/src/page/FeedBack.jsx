@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import InputField from '../components/InputField';
 import FeedbackList from '../components/FeedbackList';
+import ChatBot from '../components/ChatBot';
 
 
 function FeedBack() {
@@ -166,6 +167,8 @@ function FeedBack() {
           handleEdit={handleEdit} 
           isEditable={isEditable} 
         />
+
+        <ChatBot/>
 
       </div>
     </div>
