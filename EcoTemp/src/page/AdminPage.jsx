@@ -7,6 +7,8 @@ const AdminPage = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const navigate = useNavigate();
 
+
+  const baseulr =  import.meta.env.VITE_BASE_URL
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
@@ -22,7 +24,7 @@ const AdminPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(import.meta.env.VITE_BASE_URL`/${id}`);
+      await axios.delete( `${baseulr}/${id}`);
       setFeedbacks(feedbacks.filter((feedback) => feedback.id !== id));
     } catch (error) {
       console.error('Error deleting feedback:', error);
