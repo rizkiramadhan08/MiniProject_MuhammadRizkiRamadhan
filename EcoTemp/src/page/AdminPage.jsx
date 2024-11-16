@@ -12,7 +12,7 @@ const AdminPage = () => {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await axios.get(import.meta.env.VITE_BASE_URL);
+        const response = await axios.get(baseulr);
         setFeedbacks(response.data);
       } catch (error) {
         console.error('Error fetching feedbacks:', error);
