@@ -13,13 +13,13 @@ const ChatBot = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
-  const apiKey = "AIzaSyC9jWzp-8gIcw8NTc8crsjy6wEUsGpb6Zg";
+  const apiKey = import.meta.env.VITE_API_KEY;
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+  const model = genAI.getGenerativeModel({ model: "gemini-pro" });
   
   const generationConfig = {
-    maxOutputTokens: 1000,
-    temperature: 1,
+    maxOutputTokens: 200,
+    temperature: 0.7,
   };
 
   const handleChange = (e) => {

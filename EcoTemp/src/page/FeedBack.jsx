@@ -17,7 +17,7 @@ function FeedBack() {
   // Fetch all feedbacks from the API
   const fetchFeedbacks = async () => {
     try {
-      const response = await axios.get('https://673577925995834c8a92dcb6.mockapi.io/Feedback');
+      const response = await axios.get(import.meta.env.VITE_BASE_URL);
       setFeedbacks(response.data);
     } catch (error) {
       console.error('Error fetching feedbacks:', error);
@@ -38,11 +38,11 @@ function FeedBack() {
     try {
       if (editingId) {
         // Update existing feedback (PUT)
-        await axios.put(`https://673577925995834c8a92dcb6.mockapi.io/Feedback/${editingId}`, newFeedback);
+        await axios.put(import.meta.env.VITE_BASE_URL`/${editingId}`, newFeedback);
         setEditingId(null); // Clear editing state
       } else {
         // Create new feedback (POST)
-        await axios.post('https://673577925995834c8a92dcb6.mockapi.io/Feedback', newFeedback);
+        await axios.post(import.meta.env.VITE_BASE_URL, newFeedback);
       }
       fetchFeedbacks();
     } catch (error) {

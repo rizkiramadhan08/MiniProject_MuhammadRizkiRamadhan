@@ -10,7 +10,7 @@ const AdminPage = () => {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await axios.get('https://673577925995834c8a92dcb6.mockapi.io/Feedback');
+        const response = await axios.get(import.meta.env.VITE_BASE_URL);
         setFeedbacks(response.data);
       } catch (error) {
         console.error('Error fetching feedbacks:', error);
@@ -22,7 +22,7 @@ const AdminPage = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`https://673577925995834c8a92dcb6.mockapi.io/Feedback/${id}`);
+      await axios.delete(import.meta.env.VITE_BASE_URL`/${id}`);
       setFeedbacks(feedbacks.filter((feedback) => feedback.id !== id));
     } catch (error) {
       console.error('Error deleting feedback:', error);
