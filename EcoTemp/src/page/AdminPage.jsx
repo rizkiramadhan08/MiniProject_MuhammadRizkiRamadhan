@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import FeedbackAdmin from '../components/FeedbackAdmin';
@@ -7,8 +7,9 @@ const AdminPage = () => {
   const [feedbacks, setFeedbacks] = useState([]);
   const navigate = useNavigate();
 
-
-  const baseulr =  import.meta.env.VITE_BASE_URL
+  const baseulr = import.meta.env.VITE_BASE_URL;
+  
+  // Fetching feedback data
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
@@ -22,15 +23,20 @@ const AdminPage = () => {
     fetchFeedbacks();
   }, []);
 
+  // Deleting a feedback with confirmation alert
   const handleDelete = async (id) => {
-    try {
-      await axios.delete( `${baseulr}/${id}`);
-      setFeedbacks(feedbacks.filter((feedback) => feedback.id !== id));
-    } catch (error) {
-      console.error('Error deleting feedback:', error);
+    const confirmDelete = window.confirm('Are you sure you want to delete this feedback?');
+    if (confirmDelete) {
+      try {
+        await axios.delete(`${baseulr}/${id}`);
+        setFeedbacks(feedbacks.filter((feedback) => feedback.id !== id));
+      } catch (error) {
+        console.error('Error deleting feedback:', error);
+      }
     }
   };
 
+  // Handling admin logout
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     navigate('/login');
@@ -49,6 +55,7 @@ const AdminPage = () => {
           </button>
         </header>
 
+        {/* Pass feedbacks and delete handler to FeedbackAdmin */}
         <FeedbackAdmin feedbacks={feedbacks} handleDelete={handleDelete} />
       </div>
     </div>

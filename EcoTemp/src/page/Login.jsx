@@ -11,7 +11,7 @@ const Login = () => {
     e.preventDefault();
 
     // Admin username dan password statik
-    const adminUsername = 'admin';
+    const adminUsername = 'rizki@gmail.com';
     const adminPassword = 'admin123';
 
     if (username === adminUsername && password === adminPassword) {

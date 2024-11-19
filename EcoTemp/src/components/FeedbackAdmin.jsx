@@ -17,7 +17,7 @@ const FeedbackAdmin = ({ feedbacks, handleDelete }) => {
             </tr>
           </thead>
           <tbody>
-            {feedbacks.length === 0 ? (
+            {feedbacks === 0 ? (
               <tr>
                 <td colSpan="6" className="text-center py-4 text-gray-500">
                   Tidak ada feedback yang tersedia.

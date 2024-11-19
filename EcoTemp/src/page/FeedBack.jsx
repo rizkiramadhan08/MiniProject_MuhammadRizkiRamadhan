@@ -4,7 +4,6 @@ import InputField from '../components/InputField';
 import FeedbackList from '../components/FeedbackList';
 import ChatBot from '../components/ChatBot';
 
-
 function FeedBack() {
   const [name, setName] = useState('');
   const [room, setRoom] = useState('Ruangan 1');
@@ -14,10 +13,13 @@ function FeedBack() {
   const [editingId, setEditingId] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
 
+  // Define base URL from environment variables
+  const baseurl = import.meta.env.VITE_BASE_URL;
+
   // Fetch all feedbacks from the API
   const fetchFeedbacks = async () => {
     try {
-      const response = await axios.get(import.meta.env.VITE_BASE_URL);
+      const response = await axios.get(baseurl);
       setFeedbacks(response.data);
     } catch (error) {
       console.error('Error fetching feedbacks:', error);
@@ -38,11 +40,11 @@ function FeedBack() {
     try {
       if (editingId) {
         // Update existing feedback (PUT)
-        await axios.put(import.meta.env.VITE_BASE_URL`/${editingId}`, newFeedback);
+        await axios.put(`${baseurl}/${editingId}`, newFeedback); // Use baseurl here
         setEditingId(null); // Clear editing state
       } else {
         // Create new feedback (POST)
-        await axios.post(import.meta.env.VITE_BASE_URL, newFeedback);
+        await axios.post(baseurl, newFeedback); // Use baseurl here
       }
       fetchFeedbacks();
     } catch (error) {
@@ -106,7 +108,7 @@ function FeedBack() {
 
         <header className="text-center mb-8">
           <h1 className="text-4xl font-bold text-green-700">Feedback Suhu Ruangan</h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray -600">
             Berikan umpan balik mengenai suhu ruangan yang Anda rasakan agar dapat dipantau secara real-time.
           </p>
         </header>
