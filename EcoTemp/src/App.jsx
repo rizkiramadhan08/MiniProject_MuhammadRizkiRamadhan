@@ -5,7 +5,7 @@ import AdminPage from './page/AdminPage';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Login from './page/Login'; // Mengimpor halaman Login
-import ProtectedRoute from './utils/ProtectedRoute'; // Mengimpor komponen ProtectedRoute
+import ProtectedRoute from './Routes/ProtectedRoute'; // Mengimpor komponen ProtectedRoute
 
 function App() {
   return (
